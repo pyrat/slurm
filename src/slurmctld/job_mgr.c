@@ -2990,7 +2990,7 @@ static void _remove_job_hash(job_record_t *job_entry, job_hash_type_t type)
 		}
 	}
 
-	if (job_pptr == NULL) {
+	if (job_pptr == NULL || *job_pptr == NULL) {
 		if (job_entry->job_id == NO_VAL)
 			return;
 
