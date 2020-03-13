@@ -4425,7 +4425,6 @@ extern job_record_t *job_array_split(job_record_t *job_ptr)
 	if (!job_ptr_pend)
 		return NULL;
 
-	_remove_job_hash(job_ptr, JOB_HASH_JOB);
 	job_ptr_pend->job_id = job_ptr->job_id;
 	if (_set_job_id(job_ptr) != SLURM_SUCCESS)
 		fatal("%s: _set_job_id error", __func__);
@@ -4434,6 +4433,7 @@ extern job_record_t *job_array_split(job_record_t *job_ptr)
 			    __func__, job_ptr);
 	}
 
+	_remove_job_hash(job_ptr, JOB_HASH_JOB);
 	/*
 	 * Copy most of original job data.
 	 * This could be done in parallel, but performance was worse.
