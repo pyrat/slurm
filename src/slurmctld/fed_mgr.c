@@ -1990,7 +1990,8 @@ static void _handle_fed_job_submission(fed_job_update_info_t *job_update_info)
 	if ((job_ptr = find_job_record(job_update_info->job_id))) {
 		info("Found existing fed %pJ, going to requeue/kill it",
 		     job_ptr);
-		purge_job_record(job_ptr->job_id);
+		unlink_job_record(job_ptr);
+
 		/*
 		 * Make sure that the file delete request is purged from list
 		 * -- added from purge_job_record() -- before job is allocated
