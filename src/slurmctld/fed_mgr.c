@@ -5002,13 +5002,6 @@ extern int fed_mgr_job_revoke(job_record_t *job_ptr, bool job_complete,
 
 	job_completion_logger(job_ptr, false);
 
-	/* Don't remove the origin job */
-	if (origin_id == fed_mgr_cluster_rec->fed.id)
-		return SLURM_SUCCESS;
-
-	/* Purge the revoked job -- remote only */
-	unlink_job_record(job_ptr);
-
 	return SLURM_SUCCESS;
 }
 
