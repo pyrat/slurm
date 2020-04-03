@@ -5735,17 +5735,19 @@ static int _reconcile_fed_job(job_record_t *job_ptr, reconcile_sib_t *rec_sib)
 	}
 
 	/* Update job_info with updated siblings */
-	slurm_mutex_lock(&fed_job_list_mutex);
-	if ((job_info = _find_fed_job_info(job_ptr->job_id))) {
-		job_info->siblings_viable =
-			job_ptr->fed_details->siblings_viable;
-		job_info->siblings_active =
-			job_ptr->fed_details->siblings_active;
-	} else {
-		error("%s: failed to find fed job info for fed %pJ",
-		      __func__, job_ptr);
+	if (!IS_JOB_REVOKED(job_ptr)) {
+		slurm_mutex_lock(&fed_job_list_mutex);
+		if ((job_info = _find_fed_job_info(job_ptr->job_id))) {
+			job_info->siblings_viable =
+				job_ptr->fed_details->siblings_viable;
+			job_info->siblings_active =
+				job_ptr->fed_details->siblings_active;
+		} else {
+			error("%s: failed to find fed job info for fed %pJ",
+			      __func__, job_ptr);
+		}
+		slurm_mutex_unlock(&fed_job_list_mutex);
 	}
-	slurm_mutex_unlock(&fed_job_list_mutex);
 
 	return SLURM_SUCCESS;
 }
