@@ -5006,7 +5006,7 @@ extern int fed_mgr_job_revoke(job_record_t *job_ptr, bool job_complete,
 		return SLURM_SUCCESS;
 
 	/* Purge the revoked job -- remote only */
-	purge_job_record(job_ptr->job_id);
+	unlink_job_record(job_ptr);
 
 	return SLURM_SUCCESS;
 }

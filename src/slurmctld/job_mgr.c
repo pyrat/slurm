@@ -2991,6 +2991,9 @@ static void _remove_job_hash(job_record_t *job_entry, job_hash_type_t type)
 	}
 
 	if (job_pptr == NULL) {
+		if (job_entry->job_id == NO_VAL)
+			return;
+
 		switch (type) {
 		case JOB_HASH_JOB:
 			error("%s: Could not find hash entry for JobId=%u",
@@ -10938,6 +10941,37 @@ extern int purge_job_record(uint32_t job_id)
 	}
 
 	return count;
+}
+
+
+extern void unlink_job_record(job_record_t *job_ptr)
+{
+	uint32_t *job_id;
+
+	xassert (job_ptr->magic == JOB_MAGIC);
+
+	/* Remove record from fed_job_list */
+	fed_mgr_remove_fed_job_info(job_ptr->job_id);
+
+	/* Remove the record from job hash table */
+	_remove_job_hash(job_ptr, JOB_HASH_JOB);
+
+	/* Remove the record from job array hash tables, if applicable */
+	if (job_ptr->array_task_id != NO_VAL) {
+		_remove_job_hash(job_ptr, JOB_HASH_ARRAY_JOB);
+		_remove_job_hash(job_ptr, JOB_HASH_ARRAY_TASK);
+	}
+
+	job_id = xmalloc(sizeof(uint32_t));
+	*job_id = job_ptr->job_id;
+	list_enqueue(purge_files_list, job_id);
+
+	job_ptr->job_id = NO_VAL;
+
+	last_job_update = time(NULL);
+	slurm_mutex_lock(&purge_thread_lock);
+	slurm_cond_signal(&purge_thread_cond);
+	slurm_mutex_unlock(&purge_thread_lock);
 }
 
 
