@@ -372,7 +372,7 @@ int main(int argc, char **argv)
 	}
 
 	/* attempt to release all unneeded permissions before talking to clients */
-	_lock_down();
+	/* _lock_down(); */
 
 	rc = con_mgr_run(conmgr);
 
